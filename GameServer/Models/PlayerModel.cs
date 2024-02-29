@@ -97,7 +97,21 @@ internal class PlayerModel
         playerModel.SetAttribute(PlayerAttrKey.Level, startingValues.PlayerLevel);
         playerModel.SetAttribute(PlayerAttrKey.HeadPhoto, startingValues.HeadPhoto);
         playerModel.SetAttribute(PlayerAttrKey.HeadFrame, startingValues.HeadFrame);
+        playerModel.SetAttribute(PlayerAttrKey.Sign, "Test signature, please ignore.");
+        playerModel.SetAttribute(PlayerAttrKey.Coin, 999_999_999); // Shell Credits - Max Capacity: 999999999
+        playerModel.SetAttribute(PlayerAttrKey.RareCoin, 2_000_000); // Asterite
+        playerModel.SetAttribute(PlayerAttrKey.CashCoin, 3_000_000);
 
         return playerModel;
+    }
+
+    public void EarnCoin(int amount)
+    {
+        SetAttribute(PlayerAttrKey.Coin, GetIntAttribute(PlayerAttrKey.Coin) + amount);
+    }
+
+    public void SpendCoin(int amount)
+    {
+        SetAttribute(PlayerAttrKey.Coin, GetIntAttribute(PlayerAttrKey.Coin) - amount);
     }
 }

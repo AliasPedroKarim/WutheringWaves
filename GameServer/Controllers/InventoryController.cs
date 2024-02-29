@@ -110,7 +110,42 @@ internal class InventoryController : Controller
 
         foreach (ItemInfoConfig itemInfo in configManager.Enumerate<ItemInfoConfig>())
         {
-            modelManager.Inventory.AddItem(itemInfo.Id, itemInfo.MaxStackableNum);
+            modelManager.Inventory.AddItem(itemInfo, itemInfo.MaxStackableNum);
         }
+    }
+
+    [NetEvent(MessageId.ItemDecomposeRequest)]
+    public RpcResult OnItemDecomposeRequest(ItemDecomposeRequest request, ModelManager modelManager, ConfigManager configManager)
+    {
+        DecomposeItemInfo[] dataList = request.ItemList.ToArray();
+        // console log items to decompose
+        Console.WriteLine("Items to decompose: ");
+        foreach (DecomposeItemInfo item in dataList)
+        {
+            Console.WriteLine($"Item: {item.ItemId}, Count: {item.Count}");
+        }
+
+        foreach (DecomposeItemInfo item in dataList)
+        {
+            NormalItem? normalItem = modelManager.Inventory.ItemList.Find(item => item.Id == item.Id);
+            if (normalItem == null) return Response(MessageId.ItemDecomposeResponse, new ItemDecomposeResponse
+            {
+                ErrCode = (int)ErrorCode.ErrItemIdInvaild
+            });
+
+            ItemInfoConfig itemInfo = configManager.GetConfig<ItemInfoConfig>(item.ItemId)!;
+            if (itemInfo == null) return Response(MessageId.ItemDecomposeResponse, new ItemDecomposeResponse
+            {
+                ErrCode = (int)ErrorCode.ErrItemIdInvaild
+            });
+
+            if (normalItem.Count < item.Count) return Response(MessageId.ItemDecomposeResponse, new ItemDecomposeResponse
+            {
+                ErrCode = (int)ErrorCode.ErrItemIdInvaild
+            });
+
+            modelManager.Inventory.RemoveItem(item.ItemId, item.Count);
+        }
+        return Response(MessageId.ItemDecomposeResponse, new ItemDecomposeResponse());
     }
 }

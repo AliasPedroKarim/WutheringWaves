@@ -82,7 +82,8 @@ internal class ChatPlayerCommandHandler
         List<ItemInfoConfig> ListItems = _modelManager.Config.Enumerate<ItemInfoConfig>().ToList();
         if (ListItems.Exists(x => x.Id == itemId))
         {
-            _modelManager.Inventory.AddItem(itemId, amount);
+            ItemInfoConfig itemInfo = ListItems.Single(x => x.Id == itemId);
+            _modelManager.Inventory.AddItem(itemInfo, amount);
             _helperRoom.AddMessage(1338, 0, $"Successfully gave item with id {itemId} and amount {amount}");
         }
         else

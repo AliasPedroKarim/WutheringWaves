@@ -1,4 +1,5 @@
-﻿using Protocol;
+﻿using Core.Config;
+using Protocol;
 
 namespace GameServer.Models;
 internal class InventoryModel
@@ -12,20 +13,22 @@ internal class InventoryModel
 
     public WeaponItem? GetWeaponById(int incrId) => WeaponList.SingleOrDefault(weapon => weapon.IncrId == incrId);
 
+    public NormalItem? GetItemById(int itemId) => ItemList.SingleOrDefault(item => item.Id == itemId);
+
     public int GetItemCount(int itemId) => ItemList.SingleOrDefault(item => item.Id == itemId)?.Count ?? 0;
 
-    public bool TryUseItem(int itemId, int amount)
+    public bool TryUseItem(ItemInfoConfig itemInfo, int amount)
     {
-        int currentAmount = GetItemCount(itemId);
+        int currentAmount = GetItemCount(itemInfo.Id);
         if (amount > currentAmount) return false;
 
-        AddItem(itemId, -amount);
+        AddItem(itemInfo, -amount);
         return true;
     }
 
-    public void AddItem(int itemId, int amount)
+    public void AddItem(ItemInfoConfig itemInfo, int amount)
     {
-        NormalItem? item = ItemList.SingleOrDefault(item => item.Id == itemId);
+        NormalItem? item = ItemList.SingleOrDefault(item => item.Id == itemInfo.Id);
         if (item != null)
         {
             item.Count += amount;
@@ -34,7 +37,7 @@ internal class InventoryModel
 
         ItemList.Add(new NormalItem
         {
-            Id = itemId,
+            Id = itemInfo.Id,
             Count = amount
         });
     }
@@ -51,5 +54,17 @@ internal class InventoryModel
 
         WeaponList.Add(weapon);
         return weapon;
+    }
+
+    public void RemoveItem(int itemId, int amount)
+    {
+        NormalItem? item = ItemList.SingleOrDefault(item => item.Id == itemId);
+        if (item == null) return;
+
+        item.Count -= amount;
+        if (item.Count <= 0)
+        {
+            ItemList.Remove(item);
+        }
     }
 }

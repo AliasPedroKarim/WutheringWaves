@@ -71,26 +71,26 @@ internal class RoleController : Controller
     public RpcResult OnResonantChainUnlockRequest(ResonantChainUnlockRequest request, ModelManager modelManager, ConfigManager configManager)
     {
         roleInfo? role = modelManager.Roles.Roles.Find(r => r.RoleId == request.RoleId)!;
-    
+
         if (role != null)
         {
             RoleInfoConfig roleConfig = configManager.GetConfig<RoleInfoConfig>(request.RoleId)!;
-    
+
             int resonantChainGroupId = roleConfig.ResonantChainGroupId;
-    
+
             // Todo: add buff by _resonantChainGroupId
-    
+
             int curr = role.ResonantChainGroupIndex;
             int next = Math.Min(curr + 1, 6);
             role.ResonantChainGroupIndex = next;
-    
+
             return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
             {
                 RoleId = request.RoleId,
                 ResonantChainGroupIndex = next
             });
         }
-    
+
         return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
         {
             ErrCode = (int)ErrorCode.ErrRoleResonNotActive
@@ -240,5 +240,65 @@ internal class RoleController : Controller
         baseProp.Add(new() { Key = (int)EAttributeType.ParalysisTimeRecover, Value = config.ParalysisTimeRecover });
 
         return baseProp;
+    }
+
+    // Event trigger during attempt to level up a role (resonator)
+    [NetEvent(MessageId.RoleLevelUpViewRequest)]
+    public RpcResult OnRoleLevelUpViewRequest(RoleLevelUpViewRequest request, ModelManager modelManager, ConfigManager configManager)
+    {
+        // log request
+
+        Console.WriteLine("RoleLevelUpViewRequest>RoleId: " + request.RoleId);
+        Console.WriteLine("RoleLevelUpViewRequest>MaxItemId: " + request.MaxItemId);
+
+        foreach (var item in request.ItemList)
+        {
+            Console.WriteLine("RoleLevelUpViewRequest>item: " + item);
+        }
+
+
+        roleInfo? role = modelManager.Roles.Roles.Find(r => r.RoleId == request.RoleId)!;
+
+
+        if (role != null)
+        {
+            RoleInfoConfig roleConfig = configManager.GetConfig<RoleInfoConfig>(request.RoleId)!;
+
+            int level = role.Level;
+            int exp = role.Exp;
+
+            int nextLevel = level + 1;
+            // int nextExp = roleConfig.GetExpByLevel(nextLevel);
+
+            return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
+            {
+                Level = level,
+                // Exp = exp,
+                AddExp = nextLevel,
+                // itemlist convert to int[]
+
+                // Code = 0,
+                // NextLevel = nextLevel,
+                // NextExp = nextExp
+            });
+        }
+
+        return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
+        {
+            Code = (int)ErrorCode.NotValidRole
+        });
+    }
+
+    // PbUpLevelRoleRequest
+    [NetEvent(MessageId.PbUpLevelRoleRequest)]
+    public RpcResult OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request, ModelManager modelManager, ConfigManager configManager)
+    {
+        return Response(MessageId.PbUpLevelRoleResponse, new PbUpLevelRoleResponse()
+            // {
+            //     RoleId = request.RoleId,
+            //     Level = request.Level,
+            //     Exp = request.
+            // }
+            );
     }
 }
