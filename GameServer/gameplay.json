@@ -4,7 +4,7 @@
     "PlayerLevel": 8,
     "HeadPhoto": 1402,
     "HeadFrame": 80060009,
-    "Characters": [ 1402, 1302, 1203 ],
+    "Characters": [1402, 1302, 1203],
     "Position": {
       "X": -45000,
       "Y": 67800,
@@ -13,6 +13,7 @@
   },
   "Features": {
     "TeleportByMapMark": true,
+    "SpawnMonsters": false,
     "UnlimitedEnergy": false
   }
 }

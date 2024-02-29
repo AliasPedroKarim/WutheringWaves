@@ -16,7 +16,7 @@ internal class CreatureController : Controller
 {
     private const float DynamicSpawnRadius = 5000;
     private const float DynamicSpawnPositionDelta = 2500;
-    
+
     private readonly EntitySystem _entitySystem;
     private readonly EntityFactory _entityFactory;
     private readonly ModelManager _modelManager;
@@ -237,7 +237,7 @@ internal class CreatureController : Controller
             PlayerEntity entity = _entityFactory.CreatePlayer(roleId, _modelManager.Player.Id);
             entity.Pos = _modelManager.Player.Position.Clone();
             entity.IsCurrentRole = i == 0;
-            
+
             entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
 
             CreateConcomitants(entity);
@@ -304,6 +304,7 @@ internal class CreatureController : Controller
 
     private void SpawnDynamicEntities()
     {
+        if (!_gameplayFeatures.SpawnMonsters) return;
         Vector playerPos = _modelManager.Player.Position;
 
         // Currently only monsters
