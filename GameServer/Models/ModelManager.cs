@@ -37,5 +37,7 @@ internal class ModelManager
     public InventoryModel Inventory { get; } = new();
     public ChatModel Chat { get; } = new();
 
+    public WeaponLevelModel WeaponLevel { get; } = new();
+
     public ConfigManager Config => _configManager;
 }

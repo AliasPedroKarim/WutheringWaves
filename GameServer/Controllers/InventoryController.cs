@@ -146,6 +146,12 @@ internal class InventoryController : Controller
 
             modelManager.Inventory.RemoveItem(item.ItemId, item.Count);
         }
+
+        Session.Push(MessageId.NormalItemResponse, new NormalItemResponse
+        {
+            NormalItemList = { modelManager.Inventory.ItemList }
+        });
+
         return Response(MessageId.ItemDecomposeResponse, new ItemDecomposeResponse());
     }
 }
